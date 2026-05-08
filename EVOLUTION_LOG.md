@@ -34,3 +34,5 @@
 - Sistema operando com Asaas em modo Produção.
 - Webhook configurado para detecção automática de ambiente.
 - Google Maps estabilizado em todas as telas.
+- **NOVO**: Sistema de Vouchers implementado e implantado com sucesso. ✅
+- **NOVO**: Painel Admin atualizado com gestão de cupons. ✅

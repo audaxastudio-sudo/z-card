@@ -28,6 +28,8 @@ import AdminLogin from './pages/auth/AdminLogin'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import CustomerRegister from './pages/auth/CustomerRegister'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import ResetPassword from './pages/auth/ResetPassword'
 
 function App() {
   return (
@@ -46,6 +48,10 @@ function App() {
         
         {/* Fluxo do Admin */}
         <Route path="/login/admin" element={<AdminLogin />} />
+        
+        {/* Segurança e Recuperação */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         
         {/* Rotas Protegidas */}
         <Route path="/dashboard" element={

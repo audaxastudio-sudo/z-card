@@ -62,10 +62,12 @@ export default function DashboardLayout({ children }) {
         const isBillingPage = location.pathname === '/dashboard/billing';
         const isSupportPage = location.pathname === '/dashboard/support';
 
-        if (!store.settings_completed && !isSettingsPage) {
-          navigate('/dashboard/settings');
-        } else if (store.settings_completed && !isActive && !isBillingPage && !isSupportPage && !isSettingsPage) {
+        // Se não estiver ativo, manda para o faturamento (prioridade máxima)
+        if (!isActive && !isBillingPage && !isSupportPage && !isSettingsPage) {
           navigate('/dashboard/billing');
+        } else if (!store.settings_completed && !isSettingsPage && !isBillingPage) {
+          // Se estiver ativo mas não completou config, manda para settings (segunda prioridade)
+          navigate('/dashboard/settings');
         }
       }
 

@@ -86,7 +86,13 @@ export default function PartnerLogin() {
             <div>
               <div className="flex justify-between mb-2 ml-1">
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Senha</label>
-                <button type="button" className="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-widest transition-colors">Esqueceu?</button>
+                <button 
+                  type="button" 
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-widest transition-colors"
+                >
+                  Esqueceu?
+                </button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600" />

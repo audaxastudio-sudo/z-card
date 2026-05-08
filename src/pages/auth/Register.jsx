@@ -129,8 +129,12 @@ export default function Register() {
       return;
     }
 
-    if (!formData.category) {
-      setError('Selecione uma categoria para sua unidade.');
+    const validatePassword = (pass) => {
+      return pass.length >= 8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass);
+    };
+
+    if (!validatePassword(formData.password)) {
+      setError('A senha deve ter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula e um número.');
       return;
     }
 

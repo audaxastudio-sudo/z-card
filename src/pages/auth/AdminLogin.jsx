@@ -97,6 +97,15 @@ export default function AdminLogin() {
                   placeholder="••••••••"
                 />
               </div>
+              <div className="flex justify-end pr-2">
+                <button 
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-[10px] font-bold text-slate-600 hover:text-white uppercase tracking-widest transition-colors"
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
             </div>
 
             {error && (

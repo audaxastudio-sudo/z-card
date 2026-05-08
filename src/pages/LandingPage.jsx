@@ -99,7 +99,7 @@ export default function LandingPage() {
             </h1>
             
             <p className="text-xl text-slate-400 leading-relaxed max-w-lg">
-              Substitua os cartões de papel por uma experiência digital premium. Aumente sua recorrência em até 40% com o ecossistema Z-Card.
+              Substitua os cartões fidelidade de papel por uma experiência digital premium. Aumente sua recorrência em até 40% com o ecossistema Z-Card.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -117,16 +117,9 @@ export default function LandingPage() {
               </button>
             </div>
 
-            <div className="flex items-center space-x-8 pt-8 border-t border-slate-900">
-              <div className="flex -space-x-3">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-brand-bg bg-slate-800 overflow-hidden">
-                    <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-slate-500 font-medium">
-                <span className="text-white font-bold">+100 lojistas</span> já estão transformando seus negócios com o Z-Card.
+            <div className="pt-8 border-t border-slate-900">
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
+                <span className="text-brand-yellow font-black">Lançamento Exclusivo</span> • Vagas limitadas para os primeiros parceiros.
               </p>
             </div>
           </motion.div>
@@ -234,18 +227,18 @@ export default function LandingPage() {
                 Oferta Exclusiva de <span className="text-brand-yellow underline decoration-brand-yellow/30 underline-offset-8">Lançamento.</span>
               </h3>
               <p className="text-slate-400 text-lg leading-relaxed">
-                Estamos selecionando os 100 primeiros parceiros para o ecossistema Z-Card. Cadastre-se agora e ganhe **3 meses de mensalidade grátis** e consultoria de implantação.
+                Estamos selecionando os 100 primeiros parceiros para o ecossistema Z-Card. Cadastre-se agora e ganhe **3 meses de mensalidade grátis** e acesso antecipado às novas ferramentas.
               </p>
               
               <ul className="space-y-4">
                 <li className="flex items-center text-slate-300 font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-brand-yellow mr-3" /> Implantação Assistida Gratuita
+                  <CheckCircle2 className="w-5 h-5 text-brand-yellow mr-3" /> Tutoriais em Vídeo de Alta Performance
                 </li>
                 <li className="flex items-center text-slate-300 font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-brand-yellow mr-3" /> Materiais de PDV (Expositores) inclusos
+                  <CheckCircle2 className="w-5 h-5 text-brand-yellow mr-3" /> Expositores de Mesa (Opcional)
                 </li>
                 <li className="flex items-center text-slate-300 font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-brand-yellow mr-3" /> Suporte VIP 24h por WhatsApp
+                  <CheckCircle2 className="w-5 h-5 text-brand-yellow mr-3" /> Assistente IA de Treinamento 24h
                 </li>
               </ul>
             </div>
@@ -321,13 +314,18 @@ export default function LandingPage() {
                           required
                           value={formData.category}
                           onChange={e => setFormData({...formData, category: e.target.value})}
-                          className="w-full bg-brand-bg border border-slate-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-brand-yellow outline-none transition-all shadow-inner"
+                          className="w-full bg-brand-bg border border-slate-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-brand-yellow outline-none transition-all shadow-inner appearance-none cursor-pointer"
                         >
                           <option value="">Selecione...</option>
                           <option value="Gastronomia">Gastronomia</option>
-                          <option value="Beleza">Beleza & Estética</option>
-                          <option value="Saúde">Saúde & Bem-estar</option>
-                          <option value="Moda">Moda & Acessórios</option>
+                          <option value="Beleza & Estética">Beleza & Estética</option>
+                          <option value="Saúde & Bem-estar">Saúde & Bem-estar</option>
+                          <option value="Moda & Acessórios">Moda & Acessórios</option>
+                          <option value="Tecnologia">Tecnologia</option>
+                          <option value="Automotivo">Automotivo</option>
+                          <option value="Pet Shop">Pet Shop</option>
+                          <option value="Educação">Educação</option>
+                          <option value="Serviços">Serviços</option>
                           <option value="Outros">Outros</option>
                         </select>
                       </div>

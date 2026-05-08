@@ -37,21 +37,32 @@ export default function Support() {
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
 
-    // Simulação de IA
+    // Simulação de IA Avançada
     setTimeout(() => {
-      let botResponse = "Desculpe, ainda estou aprendendo. Mas você pode encontrar essa informação no nosso FAQ acima ou falar com um humano pelo WhatsApp!";
+      let botResponse = "Interessante sua dúvida! Como especialista Z-Card, recomendo que você verifique o menu lateral. Mas para te ajudar agora: você está tentando configurar algo ou operar o sistema?";
       
       const input = inputValue.toLowerCase();
-      if (input.includes('ponto') || input.includes('moeda')) {
-        botResponse = "Para dar pontos, use o 'Terminal PDV' no menu lateral ou peça para o cliente escanear o QR Code no seu 'Display de Balcão'.";
-      } else if (input.includes('pagar') || input.includes('assinatura') || input.includes('fatura')) {
-        botResponse = "Você pode gerenciar seus pagamentos na aba 'Faturamento'. Aceitamos PIX e Cartão de Crédito via Asaas.";
-      } else if (input.includes('prêmio') || input.includes('resgate')) {
-        botResponse = "Os prêmios são cadastrados na aba 'Recompensas'. O resgate é feito na aba 'Clientes', clicando em 'Dar Baixa'.";
+      
+      if (input.includes('cadastro') || input.includes('cadastrar')) {
+        botResponse = "Para cadastrar sua loja, basta preencher o formulário inicial. Se você fala de cadastrar uma recompensa, vá em 'Recompensas' > 'Novo Prêmio'. Para cadastrar um cliente, ele mesmo faz isso ao escanear seu QR Code pela primeira vez!";
+      } else if (input.includes('login') || input.includes('entrar')) {
+        botResponse = "O login é feito com seu e-mail e senha cadastrados. Se estiver com dificuldades, verifique se está na 'Área do Parceiro'.";
+      } else if (input.includes('senha') || input.includes('recuperar')) {
+        botResponse = "Esqueceu a senha? Na tela de login, clique em 'Esqueceu?'. Enviaremos um link de redefinição para o seu e-mail. Lembre-se: a nova senha deve ter 8 caracteres, uma maiúscula e um número.";
+      } else if (input.includes('qr') || input.includes('codigo') || input.includes('código')) {
+        botResponse = "Para gerar seu QR Code de balcão, clique em 'Exibir QR Code' no seu Dashboard ou vá em 'Terminal PDV'. Deixe esse código visível para seus clientes escanearem.";
+      } else if (input.includes('pdv') || input.includes('moeda') || input.includes('ponto') || input.includes('ganhar')) {
+        botResponse = "No 'Terminal PDV', você digita o valor da compra do cliente e ele escaneia o QR Code gerado na hora para ganhar as moedas automaticamente, conforme seu cashback.";
+      } else if (input.includes('baixa') || input.includes('resgate') || input.includes('entregar')) {
+        botResponse = "Para dar baixa em um prêmio, vá na aba 'Clientes', localize o cliente e clique em 'Dar Baixa'. Selecione o prêmio que ele está resgatando e pronto!";
+      } else if (input.includes('notificação') || input.includes('enviar') || input.includes('mensagem')) {
+        botResponse = "Você pode enviar notificações push para seus clientes na aba 'Campanhas'. É a melhor forma de avisar sobre promoções relâmpago!";
+      } else if (input.includes('relatório') || input.includes('analise') || input.includes('faturamento')) {
+        botResponse = "Seus resultados estão na aba 'Relatórios'. Lá você vê o faturamento gerado pelo app e o comportamento dos seus clientes.";
       }
 
       setMessages(prev => [...prev, { role: 'bot', content: botResponse }]);
-    }, 1000);
+    }, 800);
   };
 
   return (
@@ -128,21 +139,31 @@ export default function Support() {
           
           {/* Canais Rápidos */}
           <div className="bg-brand-surface border border-slate-800 rounded-[2.5rem] p-8 space-y-6">
-            <h3 className="text-lg font-bold text-white mb-2">Canal Oficial</h3>
+            <h3 className="text-lg font-bold text-white mb-2">Suporte & Treinamento</h3>
             
-            <a href="mailto:z-card@audaxa.com.br" className="block p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl group hover:border-blue-500/40 transition-all">
+            <div className="p-5 bg-brand-yellow/5 border border-brand-yellow/10 rounded-2xl">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-brand-yellow/10 rounded-xl flex items-center justify-center text-brand-yellow shrink-0">
+                  <Bot className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm">Treinamento via IA</p>
+                  <p className="text-[10px] text-slate-500 leading-relaxed mt-1">Use o chat abaixo para aprender a usar todos os recursos do Z-Card em tempo real.</p>
+                </div>
+              </div>
+            </div>
+
+            <a href="mailto:suporte@audaxa.com.br" className="block p-5 bg-slate-900 border border-slate-800 rounded-2xl group hover:border-slate-600 transition-all">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
+                <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-white transition-colors">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-white font-bold text-base">E-mail de Suporte</p>
-                  <p className="text-xs text-blue-500 font-bold mt-1">z-card@audaxa.com.br</p>
+                  <p className="text-white font-bold text-xs">E-mail Administrativo</p>
+                  <p className="text-[10px] text-slate-500 font-bold mt-1">suporte@audaxa.com.br</p>
                 </div>
               </div>
             </a>
-            
-            <p className="text-slate-500 text-[10px] uppercase tracking-widest text-center">Atendimento de Seg. à Sex. das 09h às 18h</p>
           </div>
 
           {/* Z-Bot: Agente de IA Simulado */}

@@ -51,18 +51,11 @@ export default function AdminPanel() {
   };
 
   const fetchAllStores = async () => {
-    console.log("AdminPanel: Buscando todas as lojas...");
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('stores')
       .select('id, name, owner_id, subscription_expires_at, subscription_status, category')
       .order('name');
     
-    if (error) {
-      console.error("AdminPanel: Erro ao buscar lojas:", error);
-      return;
-    }
-    
-    console.log("AdminPanel: Lojas carregadas:", data?.length);
     if (data) setAllStores(data);
   };
 
@@ -122,28 +115,16 @@ export default function AdminPanel() {
   };
 
   const grantAccess = async (storeId) => {
-    console.log("AdminPanel: Iniciando grantAccess para:", storeId);
     try {
       const store = allStores.find(s => s.id === storeId);
-      console.log("AdminPanel: Loja encontrada no estado:", store);
-      
-      if (!store) {
-        throw new Error("Loja não encontrada na lista local.");
-      }
+      if (!store) throw new Error("Loja não encontrada.");
 
       const now = new Date();
       const currentExpiry = store.subscription_expires_at ? new Date(store.subscription_expires_at) : now;
-      
-      // Se a expiração atual for maior que agora, somamos à expiração. 
-      // Se for menor ou nula, somamos a partir de agora.
       const baseDate = currentExpiry > now ? new Date(currentExpiry) : new Date(now);
-      
-      console.log("AdminPanel: Data base para cálculo:", baseDate.toISOString());
       
       baseDate.setMonth(baseDate.getMonth() + 1);
       const newExpiry = baseDate.toISOString();
-      
-      console.log("AdminPanel: Nova data calculada:", newExpiry);
       
       const { data, error } = await supabase
         .from('stores')
@@ -154,21 +135,18 @@ export default function AdminPanel() {
         .eq('id', storeId)
         .select();
 
-      if (error) {
-        console.error("AdminPanel: Erro no update do Supabase:", error);
-        throw error;
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        throw new Error("Nenhuma alteração realizada. Verifique as permissões de RLS no banco de dados.");
       }
 
-      console.log("AdminPanel: Update realizado com sucesso. Dados retornados:", data);
-      
       alert(`Acesso liberado! Nova expiração: ${new Date(newExpiry).toLocaleDateString()}`);
-      
-      // Forçamos a atualização da lista
-      await fetchAllStores();
-      await fetchGlobalStats();
+      fetchAllStores();
+      fetchGlobalStats();
       
     } catch (err) {
-      console.error("AdminPanel: Catch error em grantAccess:", err);
+      console.error(err);
       alert("Erro ao liberar acesso: " + err.message);
     }
   };

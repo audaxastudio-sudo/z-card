@@ -79,10 +79,11 @@ export default function CardDetails() {
 
   // Monitorar Resgate em Tempo Real
   useEffect(() => {
+    let channel = null;
     if (showTicket?.transaction?.id) {
-      console.log("Monitorando transação:", showTicket.transaction.id);
+      console.log("INICIANDO MONITORAMENTO REALTIME:", showTicket.transaction.id);
       
-      const channel = supabase
+      channel = supabase
         .channel(`redeem-${showTicket.transaction.id}`)
         .on('postgres_changes', {
           event: 'UPDATE',
@@ -90,17 +91,23 @@ export default function CardDetails() {
           table: 'transactions',
           filter: `id=eq.${showTicket.transaction.id}`
         }, (payload) => {
-          console.log("Mudança detectada na transação:", payload.new);
-          if (payload.new.status === 'completed') {
+          console.log("EVENTO RECEBIDO NO REALTIME:", payload);
+          if (payload.new && payload.new.status === 'completed') {
+            console.log("RESGATE CONFIRMADO PELO LOJISTA!");
             handleRedeemSuccess();
           }
         })
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
+        .subscribe((status) => {
+          console.log("STATUS DO CANAL REALTIME:", status);
+        });
     }
+
+    return () => {
+      if (channel) {
+        console.log("LIMPANDO CANAL REALTIME");
+        supabase.removeChannel(channel);
+      }
+    };
   }, [showTicket]);
 
   const handleRedeemSuccess = () => {

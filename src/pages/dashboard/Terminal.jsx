@@ -123,6 +123,8 @@ export default function Terminal() {
         .eq('id', transactionId);
 
       if (updateError) throw updateError;
+      
+      console.log("SUCESSO: Transação atualizada para completed no banco:", transactionId);
 
       setRedeemStatus({ 
         success: true, 

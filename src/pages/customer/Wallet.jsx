@@ -47,7 +47,8 @@ export default function Wallet() {
             logo_url,
             latitude,
             longitude,
-            subscription_status
+            subscription_status,
+            rewards (points_needed)
           )
         `)
         .eq('customer_id', user.id)
@@ -137,12 +138,26 @@ export default function Wallet() {
               <div className="mt-6 space-y-2 relative z-10">
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-500">
                   <span>Falta pouco para o próximo prêmio</span>
-                  <span className="text-white">{Math.min(Math.round((card.stamps_accumulated / 10) * 100), 100)}%</span>
+                  <span className="text-white">
+                    {(() => {
+                      const minRewardPoints = card.stores?.rewards?.length > 0 
+                        ? Math.min(...card.stores.rewards.map(r => r.points_needed)) 
+                        : 10;
+                      return Math.min(Math.round((card.stamps_accumulated / minRewardPoints) * 100), 100);
+                    })()}%
+                  </span>
                 </div>
                 <div className="h-1.5 w-full bg-black rounded-full overflow-hidden border border-slate-900">
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${Math.min((card.stamps_accumulated / 10) * 100, 100)}%` }}
+                    animate={{ 
+                      width: `${(() => {
+                        const minRewardPoints = card.stores?.rewards?.length > 0 
+                          ? Math.min(...card.stores.rewards.map(r => r.points_needed)) 
+                          : 10;
+                        return Math.min(Math.round((card.stamps_accumulated / minRewardPoints) * 100), 100);
+                      })()}%` 
+                    }}
                     transition={{ duration: 1, ease: "easeOut" }}
                     className="h-full bg-gradient-to-r from-brand-yellow to-yellow-500 shadow-[0_0_10px_rgba(255,215,0,0.5)]"
                   ></motion.div>

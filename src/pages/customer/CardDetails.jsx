@@ -349,12 +349,12 @@ export default function CardDetails() {
       {/* Modal de Ticket de Resgate */}
       <AnimatePresence>
         {showTicket && (
-          <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex flex-col overflow-y-auto py-10 px-6">
             <motion.div 
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="w-full max-w-sm relative"
+              className="w-full max-w-sm mx-auto relative mb-10"
             >
               <div className="bg-white rounded-t-[2.5rem] p-10 flex flex-col items-center text-center relative overflow-hidden">
                  <div className="absolute top-0 left-0 right-0 h-2 bg-brand-yellow"></div>

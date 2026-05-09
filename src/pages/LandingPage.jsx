@@ -24,12 +24,16 @@ export default function LandingPage() {
   const { user, profile, store, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    if (!authLoading && user && profile?.role === 'merchant' && store) {
-      const isTrialActive = store.trial_until && new Date(store.trial_until) > new Date();
-      const isActive = store.subscription_status === 'ACTIVE' || isTrialActive;
-      
-      if (isActive) {
-        navigate('/dashboard');
+    if (!authLoading && user && profile) {
+      if (profile.role === 'merchant' && store) {
+        const isTrialActive = store.trial_until && new Date(store.trial_until) > new Date();
+        const isActive = store.subscription_status === 'ACTIVE' || isTrialActive;
+        
+        if (isActive) {
+          navigate('/dashboard');
+        }
+      } else if (profile.role === 'customer') {
+        navigate('/carteira');
       }
     }
   }, [user, profile, store, authLoading, navigate]);

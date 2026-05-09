@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, Loader2, ChevronLeft, User, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 export default function MemberLogin() {
   const [email, setEmail] = useState('');
@@ -10,7 +11,7 @@ export default function MemberLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, user, profile, loading: authLoading } = useAuth();
+  const { signIn, signOut, user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,9 +28,22 @@ export default function MemberLogin() {
     setLoading(true);
 
     try {
-      const { error } = await signIn({ email, password });
+      const { error, data } = await signIn({ email, password });
       if (error) throw error;
       
+      // Validação de Segurança: Verificar Role antes de permitir entrada
+      const { data: profileCheck } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profileCheck?.role !== 'customer') {
+        await signOut();
+        setError('Acesso negado. Esta conta não é de um Membro.');
+        return;
+      }
+
       navigate('/carteira');
     } catch (err) {
       setError('E-mail ou senha incorretos.');

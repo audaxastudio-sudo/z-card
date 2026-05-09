@@ -117,14 +117,19 @@ export default function Terminal() {
       }
 
       // 2. Marcar como completada
-      const { error: updateError } = await supabase
+      const { data: updateData, error: updateError } = await supabase
         .from('transactions')
         .update({ status: 'completed' })
-        .eq('id', transactionId);
+        .eq('id', transactionId)
+        .select();
 
       if (updateError) throw updateError;
       
-      console.log("SUCESSO: Transação atualizada para completed no banco:", transactionId);
+      if (!updateData || updateData.length === 0) {
+        throw new Error("Não foi possível validar este resgate. Verifique as permissões da loja.");
+      }
+      
+      console.log("SUCESSO: Transação validada no banco:", transactionId);
 
       setRedeemStatus({ 
         success: true, 

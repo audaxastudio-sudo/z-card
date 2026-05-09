@@ -132,6 +132,7 @@ export const AuthProvider = ({ children }) => {
     store,
     session,
     loading,
+    isDataLoaded: !!profile && (profile.role !== 'customer' || profile.whatsapp !== undefined),
     isProfileComplete: profile?.role === 'customer' 
       ? !!(profile.full_name && profile.whatsapp && profile.birth_date && profile.address)
       : true,

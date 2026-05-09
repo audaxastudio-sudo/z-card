@@ -28,7 +28,8 @@ export default function CustomerLayout({ children }) {
   useEffect(() => {
     if (user) {
       // Bloqueio se o perfil estiver incompleto (Exceto na própria tela de perfil)
-      if (!isProfileComplete && location.pathname !== '/perfil') {
+      // Bloqueio se o perfil estiver incompleto (Apenas se os dados já carregaram e não estiver na própria tela de perfil)
+      if (profile && (profile.role !== 'customer' || profile.whatsapp !== undefined) && !isProfileComplete && location.pathname !== '/perfil') {
         navigate('/perfil');
       }
 

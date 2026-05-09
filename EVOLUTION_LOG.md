@@ -48,3 +48,11 @@
 - **NOVO**: Obrigatoriedade de preenchimento de perfil para membros. ✅
 - **BUGFIX**: Correção na geração de QR Code de resgate no cartão do cliente. ✅
 - **BUGFIX**: Lógica de concessão de acesso (+30 dias) no Painel Admin corrigida para somar períodos. ✅
+- **Segurança & Autenticação:**
+    *   Implementada trava de segurança por Role no login (impede Membros de acessarem Painel de Parceiros e vice-versa).
+    *   Configuração de SMTP Customizado (Resend) para disparos de e-mail em escala.
+    *   Criação de Templates HTML Premium para confirmação de conta e recuperação de senha.
+- **Correções Críticas:**
+    *   Resolvido erro 500 no `signUp` via correção da trigger `handle_new_user` (conflito de colunas inexistentes).
+    *   Implementado redirecionamento inteligente pós-login e na Landing Page (identificação automática de Membro/Parceiro).
+    *   Atualizada identidade visual institucional para "Audaxa Tecnologia".

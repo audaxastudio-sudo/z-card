@@ -108,15 +108,28 @@ export default function Scanner() {
         cardId = nc.id;
       }
 
-      await supabase.from('loyalty_cards').update({ stamps_accumulated: (card?.stamps_accumulated || 0) + token.points_amount }).eq('id', cardId);
-      await supabase.from('point_tokens').update({ is_used: true }).eq('id', tokenId);
-      await supabase.from('transactions').insert([{ 
+      // Executar todas as operações de banco em sequência
+      const { error: cardUpdateError } = await supabase.from('loyalty_cards').update({ 
+        stamps_accumulated: (card?.stamps_accumulated || 0) + token.points_amount 
+      }).eq('id', cardId);
+      
+      if (cardUpdateError) throw new Error("Erro ao atualizar seu cartão.");
+
+      const { error: tokenUpdateError } = await supabase.from('point_tokens').update({ 
+        is_used: true 
+      }).eq('id', tokenId);
+
+      if (tokenUpdateError) throw new Error("Erro ao validar o código (Verifique permissões).");
+
+      const { error: transError } = await supabase.from('transactions').insert([{ 
         card_id: cardId, 
         type: 'earn', 
         amount: token.points_amount, 
         purchase_amount: token.purchase_amount,
         description: `Cashback: ${token.stores?.name}` 
       }]);
+
+      if (transError) throw new Error("Erro ao registrar transação.");
 
       setPointsEarned(token.points_amount);
       setStoreName(token.stores?.name);

@@ -164,37 +164,58 @@ export default function Members() {
         />
       </div>
 
-      {/* Tabela */}
-      <div className="bg-brand-surface border border-slate-800 rounded-3xl overflow-hidden">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-slate-800"><th className="px-8 py-4 text-xs text-slate-500">Cliente</th><th className="px-8 py-4 text-xs text-slate-500">Saldo Atual</th><th className="px-8 py-4 text-xs text-slate-500 text-right">Ações</th></tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/50">
-            {filteredMembers.map((member) => (
-              <tr key={member.id} className="hover:bg-slate-800/30">
-                <td className="px-8 py-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center overflow-hidden">
-                      {member.profiles?.avatar_url ? <img src={member.profiles.avatar_url} className="w-full h-full object-cover"/> : <UserIcon className="text-slate-600"/>}
-                    </div>
-                    <div><p className="text-white font-bold">{member.profiles?.full_name}</p><p className="text-[10px] text-slate-500">
-                      {member.last_activity ? `Ativo ${dateFormatter.format(new Date(member.last_activity))}` : 'Novo Membro'}
-                    </p></div>
-                  </div>
-                </td>
-                <td className="px-8 py-4">
-                  <span className="text-xl font-black text-brand-yellow">{member.stamps_accumulated}</span> <span className="text-xs text-brand-yellow/50">Moedas Z</span>
-                </td>
-                <td className="px-8 py-4 text-right">
-                  <button onClick={() => setSelectedMember(member)} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center inline-flex">
-                    <MinusCircle className="w-4 h-4 mr-2 text-brand-yellow" /> Dar Baixa (Resgate)
-                  </button>
-                </td>
+      {/* Tabela Responsiva */}
+      <div className="bg-brand-surface border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full text-left min-w-[600px] md:min-w-full">
+            <thead>
+              <tr className="border-b border-slate-800">
+                <th className="px-4 md:px-8 py-5 text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest">Cliente</th>
+                <th className="px-4 md:px-8 py-5 text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest">Saldo Atual</th>
+                <th className="px-4 md:px-8 py-5 text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest text-right">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-800/50">
+              {filteredMembers.map((member) => (
+                <tr key={member.id} className="hover:bg-slate-800/30 transition-colors">
+                  <td className="px-4 md:px-8 py-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
+                        {member.profiles?.avatar_url ? (
+                          <img src={member.profiles.avatar_url} className="w-full h-full object-cover" alt="Avatar"/>
+                        ) : (
+                          <UserIcon className="w-5 h-5 text-slate-700"/>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-white font-bold text-sm truncate">{member.profiles?.full_name}</p>
+                        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-tighter truncate">
+                          {member.last_activity ? `Ativo ${dateFormatter.format(new Date(member.last_activity))}` : 'Novo Membro'}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 md:px-8 py-4">
+                    <div className="flex items-baseline space-x-1">
+                      <span className="text-lg md:text-xl font-black text-brand-yellow">{member.stamps_accumulated}</span>
+                      <span className="text-[8px] md:text-xs text-brand-yellow/40 font-black uppercase tracking-tighter">Moedas Z</span>
+                    </div>
+                  </td>
+                  <td className="px-4 md:px-8 py-4 text-right">
+                    <button 
+                      onClick={() => setSelectedMember(member)} 
+                      className="bg-brand-surface border border-slate-700 hover:border-brand-yellow hover:bg-brand-yellow/5 text-white px-3 md:px-4 py-2 rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all inline-flex items-center group active:scale-95 shadow-lg whitespace-nowrap"
+                    >
+                      <MinusCircle className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2 text-brand-yellow group-hover:scale-110 transition-transform" /> 
+                      <span className="hidden sm:inline">Dar Baixa (Resgate)</span>
+                      <span className="sm:hidden">Resgate</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Modal de Resgate */}

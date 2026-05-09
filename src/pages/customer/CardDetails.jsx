@@ -75,6 +75,49 @@ export default function CardDetails() {
     }
   };
 
+  const [successRedeem, setSuccessRedeem] = useState(false);
+
+  // Monitorar Resgate em Tempo Real
+  useEffect(() => {
+    if (showTicket?.transaction?.id) {
+      console.log("Monitorando transação:", showTicket.transaction.id);
+      
+      const channel = supabase
+        .channel(`redeem-${showTicket.transaction.id}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'transactions',
+          filter: `id=eq.${showTicket.transaction.id}`
+        }, (payload) => {
+          console.log("Mudança detectada na transação:", payload.new);
+          if (payload.new.status === 'completed') {
+            handleRedeemSuccess();
+          }
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [showTicket]);
+
+  const handleRedeemSuccess = () => {
+    setSuccessRedeem(true);
+    
+    // Feedback tátil se disponível
+    if (window.navigator.vibrate) {
+      window.navigator.vibrate([100, 50, 100]);
+    }
+
+    setTimeout(() => {
+      setShowTicket(null);
+      setSuccessRedeem(false);
+      navigate('/carteira');
+    }, 3500);
+  };
+
   const handleRedeem = async (reward) => {
     const stamps = data?.stamps_accumulated || 0;
     if (stamps < reward.points_needed) return;
@@ -315,6 +358,40 @@ export default function CardDetails() {
             >
               <div className="bg-white rounded-t-[2.5rem] p-10 flex flex-col items-center text-center relative overflow-hidden">
                  <div className="absolute top-0 left-0 right-0 h-2 bg-brand-yellow"></div>
+                 
+                 {/* Camada de Sucesso */}
+                 <AnimatePresence>
+                   {successRedeem && (
+                     <motion.div 
+                       initial={{ opacity: 0 }}
+                       animate={{ opacity: 1 }}
+                       className="absolute inset-0 z-20 bg-white flex flex-col items-center justify-center p-6"
+                     >
+                        <motion.div 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", damping: 12 }}
+                          className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white mb-6 shadow-glow-yellow"
+                        >
+                          <CheckCircle2 className="w-12 h-12" />
+                        </motion.div>
+                        <h3 className="text-2xl font-black text-brand-bg uppercase italic tracking-tighter">Prêmio Entregue!</h3>
+                        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2">Aproveite sua recompensa</p>
+                        
+                        <div className="mt-8 flex space-x-1">
+                          {[1,2,3].map(i => (
+                            <motion.div
+                              key={i}
+                              animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                              transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
+                              className="w-2 h-2 bg-brand-yellow rounded-full"
+                            />
+                          ))}
+                        </div>
+                     </motion.div>
+                   )}
+                 </AnimatePresence>
+
                  <div className="w-16 h-16 bg-brand-bg rounded-2xl flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-8 h-8 text-brand-yellow" />
                  </div>
@@ -358,9 +435,10 @@ export default function CardDetails() {
               <div className="bg-white rounded-b-[2.5rem] p-8 pt-10">
                  <button 
                   onClick={() => setShowTicket(null)}
-                  className="w-full bg-brand-bg text-white py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform"
+                  disabled={successRedeem}
+                  className="w-full bg-brand-bg text-white py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform disabled:opacity-50"
                  >
-                  Voltar para Carteira
+                  {successRedeem ? 'Finalizando...' : 'Cancelar e Voltar'}
                  </button>
               </div>
             </motion.div>

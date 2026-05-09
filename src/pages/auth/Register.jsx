@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, Store, ArrowRight, Loader2, ChevronLeft, MapPin, Phone, FileText, Tag } from 'lucide-react';
+import { Mail, Lock, Store, ArrowRight, Loader2, ChevronLeft, MapPin, Phone, FileText, Tag, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import AvatarUpload from '../../components/common/AvatarUpload';
 
@@ -32,6 +32,8 @@ export default function Register() {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signUp, user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -339,13 +341,20 @@ export default function Register() {
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
                     <input 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       value={formData.password}
                       onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))}
-                      className="w-full bg-black/40 border border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
+                      className="w-full bg-black/40 border border-slate-800 rounded-2xl pl-12 pr-12 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
                       placeholder="••••••••"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-brand-yellow transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 
@@ -354,13 +363,20 @@ export default function Register() {
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
                     <input 
-                      type="password" 
+                      type={showConfirmPassword ? "text" : "password"} 
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData(prev => ({...prev, confirmPassword: e.target.value}))}
-                      className="w-full bg-black/40 border border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
+                      className="w-full bg-black/40 border border-slate-800 rounded-2xl pl-12 pr-12 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
                       placeholder="••••••••"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-brand-yellow transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
               </div>

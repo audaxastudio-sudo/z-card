@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -7,6 +7,7 @@ import {
   Star, MessageCircle, BarChart3, Clock, Loader2, ChevronRight
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import PWAInstallBanner from '../components/PWAInstallBanner';
 
 export default function LandingPage() {
@@ -20,6 +21,18 @@ export default function LandingPage() {
     businessName: '',
     category: ''
   });
+  const { user, profile, store, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user && profile?.role === 'merchant' && store) {
+      const isTrialActive = store.trial_until && new Date(store.trial_until) > new Date();
+      const isActive = store.subscription_status === 'ACTIVE' || isTrialActive;
+      
+      if (isActive) {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, profile, store, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -132,6 +132,9 @@ export const AuthProvider = ({ children }) => {
     store,
     session,
     loading,
+    isProfileComplete: profile?.role === 'customer' 
+      ? !!(profile.full_name && profile.whatsapp && profile.birth_date && profile.address)
+      : true,
     fetchUserData,
     signUp: (data) => supabase.auth.signUp(data),
     signIn: (data) => supabase.auth.signInWithPassword(data),

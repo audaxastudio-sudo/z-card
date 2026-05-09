@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Share2, Info, Star, Gift, Clock, Loader2, CheckCircle2, Ticket, QrCode, Navigation } from 'lucide-react';
+import { ChevronLeft, MapPin, Share2, Info, Star, Gift, Clock, Loader2, CheckCircle2, Ticket, QrCode as QrIcon, Navigation } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { QRCodeSVG } from 'qrcode.react';
 import { supabase } from '../../lib/supabase';
 import { calculateDistance } from '../../lib/utils';
 
@@ -328,7 +329,20 @@ export default function CardDetails() {
 
                  <div className="bg-slate-50 p-6 rounded-3xl w-full flex flex-col items-center">
                     <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
-                      <QrCode className="w-32 h-32 text-brand-bg" />
+                      <QRCodeSVG 
+                        value={showTicket.transaction.id}
+                        size={128}
+                        level="H"
+                        includeMargin={false}
+                        imageSettings={{
+                          src: "/Logo.png",
+                          x: undefined,
+                          y: undefined,
+                          height: 24,
+                          width: 24,
+                          excavate: true,
+                        }}
+                      />
                     </div>
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">ID do Resgate</p>
                     <p className="text-[11px] font-black text-brand-bg font-mono">{showTicket.transaction.id.split('-')[0].toUpperCase()}</p>

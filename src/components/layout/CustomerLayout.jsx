@@ -18,7 +18,7 @@ const navItemsRight = [
 ];
 
 export default function CustomerLayout({ children }) {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, isProfileComplete, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -27,6 +27,11 @@ export default function CustomerLayout({ children }) {
 
   useEffect(() => {
     if (user) {
+      // Bloqueio se o perfil estiver incompleto (Exceto na própria tela de perfil)
+      if (!isProfileComplete && location.pathname !== '/perfil') {
+        navigate('/perfil');
+      }
+
       fetchNotifications();
 
       const channel = supabase
@@ -45,7 +50,7 @@ export default function CustomerLayout({ children }) {
         supabase.removeChannel(channel);
       };
     }
-  }, [user]);
+  }, [user, isProfileComplete, location.pathname]);
 
   const fetchNotifications = async () => {
     const { data, error } = await supabase
@@ -177,13 +182,17 @@ export default function CustomerLayout({ children }) {
             <div className="flex space-x-8">
               {navItemsLeft.map((item) => {
                 const isActive = location.pathname === item.path;
+                const isDisabled = !isProfileComplete && item.path !== '/perfil';
                 return (
                   <Link
                     key={item.name}
-                    to={item.path}
+                    to={isDisabled ? '#' : item.path}
                     className={`flex flex-col items-center space-y-1 transition-all ${
-                      isActive ? 'text-brand-yellow scale-110' : 'text-slate-500 hover:text-slate-300'
+                      isActive ? 'text-brand-yellow scale-110' : isDisabled ? 'text-slate-800 opacity-50 cursor-not-allowed' : 'text-slate-500 hover:text-slate-300'
                     }`}
+                    onClick={(e) => {
+                      if (isDisabled) e.preventDefault();
+                    }}
                   >
                     <item.icon className={`w-6 h-6 ${isActive ? 'drop-shadow-glow-yellow' : ''}`} />
                     <span className="text-[9px] font-black uppercase tracking-widest">{item.name}</span>
@@ -194,8 +203,11 @@ export default function CustomerLayout({ children }) {
 
             <div className="absolute left-1/2 -translate-x-1/2 -top-14">
               <Link 
-                to="/escanear"
-                className="w-16 h-16 bg-brand-yellow rounded-full flex items-center justify-center shadow-[0_8px_25px_rgba(255,215,0,0.4)] border-4 border-brand-bg active:scale-90 transition-transform hover:rotate-12"
+                to={!isProfileComplete ? '#' : "/escanear"}
+                className={`w-16 h-16 bg-brand-yellow rounded-full flex items-center justify-center shadow-[0_8px_25px_rgba(255,215,0,0.4)] border-4 border-brand-bg active:scale-90 transition-transform hover:rotate-12 ${!isProfileComplete ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}
+                onClick={(e) => {
+                  if (!isProfileComplete) e.preventDefault();
+                }}
               >
                 <QrCode className="w-8 h-8 text-brand-bg" />
               </Link>
@@ -204,13 +216,17 @@ export default function CustomerLayout({ children }) {
             <div className="flex space-x-8">
               {navItemsRight.map((item) => {
                 const isActive = location.pathname === item.path;
+                const isDisabled = !isProfileComplete && item.path !== '/perfil';
                 return (
                   <Link
                     key={item.name}
-                    to={item.path}
+                    to={isDisabled ? '#' : item.path}
                     className={`flex flex-col items-center space-y-1 transition-all ${
-                      isActive ? 'text-brand-yellow scale-110' : 'text-slate-500 hover:text-slate-300'
+                      isActive ? 'text-brand-yellow scale-110' : isDisabled ? 'text-slate-800 opacity-50 cursor-not-allowed' : 'text-slate-500 hover:text-slate-300'
                     }`}
+                    onClick={(e) => {
+                      if (isDisabled) e.preventDefault();
+                    }}
                   >
                     <item.icon className={`w-6 h-6 ${isActive ? 'drop-shadow-glow-yellow' : ''}`} />
                     <span className="text-[9px] font-black uppercase tracking-widest">{item.name}</span>

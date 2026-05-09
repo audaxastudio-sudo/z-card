@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Loader2, Phone, Calendar, MapPin, ChevronLeft } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Phone, Calendar, MapPin, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import AvatarUpload from '../../components/common/AvatarUpload';
 
@@ -13,6 +13,8 @@ export default function CustomerRegister() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -306,25 +308,43 @@ export default function CustomerRegister() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Senha</label>
-                  <input 
-                    type="password" 
-                    value={formData.password}
-                    onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))}
-                    className="w-full bg-brand-bg border border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
-                    placeholder="••••••••"
-                    required
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      value={formData.password}
+                      onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))}
+                      className="w-full bg-brand-bg border border-slate-800 rounded-2xl px-5 pr-12 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-brand-yellow transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Confirmar</label>
-                  <input 
-                    type="password" 
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData(prev => ({...prev, confirmPassword: e.target.value}))}
-                    className="w-full bg-brand-bg border border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
-                    placeholder="••••••••"
-                    required
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showConfirmPassword ? "text" : "password"} 
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData(prev => ({...prev, confirmPassword: e.target.value}))}
+                      className="w-full bg-brand-bg border border-slate-800 rounded-2xl px-5 pr-12 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-brand-yellow transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

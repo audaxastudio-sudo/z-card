@@ -1,9 +1,11 @@
 # 📈 Z-CARD - Evolution Log
 
 ## [2026-05-07] - Restauração Pós-Formatação e Protocolos
+
 **Status**: Concluído ✅
 
 ### Tarefas Realizadas:
+
 - [x] Check-up inicial da estrutura do projeto.
 - [x] Criação do `PROJECT_MANIFEST.md` (Escopo e Objetivos).
 - [x] Criação do `TECH_STACK.md` (Tecnologias e Versões).
@@ -16,9 +18,11 @@
 ---
 
 ## [Pendente] - Testes de Fluxo e Validação de Pagamentos
+
 **Status**: Planejado ⏳
 
 ### Próximos Passos:
+
 - [x] Testar criação de cliente no Asaas via Sandbox. ✅
 - [x] Testar geração de assinatura/link de pagamento. ✅
 - [x] Validar recebimento de Webhooks em ambiente de teste (Modo Universal). ✅
@@ -28,11 +32,19 @@
 ---
 
 ## [ATIVO] - Manutenção e Monitoramento de Produção
+
 **Status**: Operacional 🚀
 
 ### Observações:
+
 - Sistema operando com Asaas em modo Produção.
 - Webhook configurado para detecção automática de ambiente.
 - Google Maps estabilizado em todas as telas.
 - **NOVO**: Sistema de Vouchers implementado e implantado com sucesso. ✅
 - **NOVO**: Painel Admin atualizado com gestão de cupons. ✅
+- **NOVO**: Geração de série completa de mockups técnicos fidedignos ao código (Dashboard, Display, Campanhas, Recompensas, PDV e Cartão do Cliente). ✅
+- **NOVO**: Visibilidade de senha (Eye Icon) em todas as telas de autenticação. ✅
+- **NOVO**: Redirecionamento automático de lojistas logados na Landing Page. ✅
+- **NOVO**: Obrigatoriedade de preenchimento de perfil para membros. ✅
+- **BUGFIX**: Correção na geração de QR Code de resgate no cartão do cliente. ✅
+- **BUGFIX**: Lógica de concessão de acesso (+30 dias) no Painel Admin corrigida para somar períodos. ✅

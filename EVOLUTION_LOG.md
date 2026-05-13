@@ -71,14 +71,15 @@
 
 ---
 
-## [ATIVO] - Notificações Push & Expansão Admin
+## [CONCLUÍDO] - Notificações Push & Expansão Admin ✅
 
-**Status**: Em Progresso 🛠️
+**Status**: Finalizado e em Produção 🚀
 
-### Tarefas em Andamento:
+### Realizações:
 
-- [ ] Integrar disparos Push reais nas Campanhas de Parceiros.
-- [ ] Implementar seletor inteligente (Autocomplete) de usuários no Admin.
-- [ ] Adicionar envio de Push global/individual para Membros no Painel Admin.
-- [ ] Criar aba de Gestão de Parceiros no Admin Center.
-- [ ] Validar recebimento de tokens de push em primeiro e segundo plano.
+- [x] **Notificações Push Reais**: Integrados disparos via Firebase (FCM V1) para campanhas e comunicados.
+- [x] **Busca Inteligente**: Implementado Autocomplete de usuários (nome/e-mail) no Painel Admin.
+- [x] **Gestão de Membros**: Criada aba dedicada para administração de usuários Clientes/Membros.
+- [x] **Ativação de Tokens**: Implementado `PushNotificationManager` para coleta e registro de tokens.
+- [x] **Ajustes de UI**: Reestruturado cabeçalho do Admin para visualização premium e responsiva.
+- [x] **Correção de Digitação**: Ajustada função `Title Case` para permitir espaços durante a escrita.

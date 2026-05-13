@@ -284,7 +284,7 @@ export default function AdminPanel() {
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center space-x-5">
             <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center shadow-glow-blue border border-blue-500/20">
               <ShieldAlert className="w-7 h-7 text-blue-500" />
@@ -311,10 +311,13 @@ export default function AdminPanel() {
               <LogOut className="w-5 h-5" />
             </button>
           </div>
-          
-          <div className="flex bg-brand-surface p-1 rounded-2xl border border-slate-800 overflow-x-auto scrollbar-hide">
+        </div>
+
+        {/* Navigation Tabs Bar */}
+        <div className="border-b border-slate-800 pb-10">
+          <div className="flex flex-wrap bg-brand-surface p-1.5 rounded-2xl border border-slate-800 gap-1.5">
             <TabButton active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon={Activity} label="Painel" />
-            <TabButton active={activeTab === 'merchants'} onClick={() => setActiveTab('merchants')} icon={Users} label="Parceiros" />
+            <TabButton active={activeTab === 'customers_management'} onClick={() => setActiveTab('customers_management')} icon={Users} label="Membros" />
             <TabButton active={activeTab === 'stores'} onClick={() => setActiveTab('stores')} icon={Store} label="Lojas" />
             <TabButton active={activeTab === 'leads'} onClick={() => setActiveTab('leads')} icon={UserPlus} label="Leads" />
             <TabButton active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={Bell} label="Avisos" />
@@ -768,18 +771,18 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {activeTab === 'merchants' && (
+        {activeTab === 'customers_management' && (
           <div className="bg-brand-surface border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center">
-                  <Users className="w-6 h-6 mr-3 text-brand-yellow" /> Gestão de Parceiros
+                  <Users className="w-6 h-6 mr-3 text-brand-yellow" /> Gestão de Membros
                 </h3>
-                <p className="text-xs text-slate-500 mt-1 uppercase font-bold tracking-widest">Controle e visualização de todos os lojistas</p>
+                <p className="text-xs text-slate-500 mt-1 uppercase font-bold tracking-widest">Controle e visualização de todos os clientes</p>
               </div>
               <div className="flex items-center space-x-2 bg-black/20 p-3 rounded-2xl border border-slate-800">
                 <Users className="w-4 h-4 text-slate-500" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{allMerchants.length} Parceiros</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{allCustomers.length} Membros</span>
               </div>
             </div>
 
@@ -787,54 +790,54 @@ export default function AdminPanel() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                    <th className="pb-5 px-4">Parceiro</th>
+                    <th className="pb-5 px-4">Membro</th>
                     <th className="pb-5 px-4">ID do Usuário</th>
                     <th className="pb-5 px-4">Cadastro em</th>
                     <th className="pb-5 px-4 text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/50">
-                  {allMerchants.map(merchant => (
-                    <tr key={merchant.id} className="hover:bg-slate-800/30 transition-colors group">
+                  {allCustomers.map(customer => (
+                    <tr key={customer.id} className="hover:bg-slate-800/30 transition-colors group">
                       <td className="py-6 px-4">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-800 group-hover:border-brand-yellow/30 transition-all shadow-inner">
-                            {merchant.avatar_url ? (
-                              <img src={merchant.avatar_url} alt="" className="w-full h-full object-cover" />
+                            {customer.avatar_url ? (
+                              <img src={customer.avatar_url} alt="" className="w-full h-full object-cover" />
                             ) : (
                               <Users className="w-6 h-6 text-slate-700" />
                             )}
                           </div>
                           <div>
-                            <p className="text-white font-bold group-hover:text-brand-yellow transition-colors">{merchant.full_name || 'Sem Nome'}</p>
-                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Lojista Parceiro</p>
+                            <p className="text-white font-bold group-hover:text-brand-yellow transition-colors">{customer.full_name || 'Sem Nome'}</p>
+                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Membro / Cliente</p>
                           </div>
                         </div>
                       </td>
                       <td className="py-6 px-4 font-mono text-[10px] text-slate-500">
-                        {merchant.id}
+                        {customer.id}
                       </td>
                       <td className="py-6 px-4">
-                        <span className="text-xs font-bold text-slate-300">{new Date(merchant.created_at).toLocaleDateString()}</span>
+                        <span className="text-xs font-bold text-slate-300">{new Date(customer.created_at).toLocaleDateString()}</span>
                       </td>
                       <td className="py-6 px-4 text-right">
                         <button 
                           onClick={() => {
-                            setNotification({ target: 'individual_merchant', title: '', message: '' });
-                            setSelectedUser({ id: merchant.id, full_name: merchant.full_name });
+                            setNotification({ target: 'individual_customer', title: '', message: '' });
+                            setSelectedUser({ id: customer.id, full_name: customer.full_name });
                             setActiveTab('notifications');
                           }}
                           className="bg-brand-yellow/10 text-brand-yellow px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-brand-yellow hover:text-brand-bg transition-all shadow-glow-yellow/5"
                         >
-                          Enviar Aviso
+                          Enviar Push
                         </button>
                       </td>
                     </tr>
                   ))}
-                  {allMerchants.length === 0 && (
+                  {allCustomers.length === 0 && (
                     <tr>
                       <td colSpan="4" className="py-20 text-center text-slate-600 italic text-sm">
-                        Nenhum parceiro encontrado.
+                        Nenhum membro encontrado.
                       </td>
                     </tr>
                   )}
@@ -853,11 +856,11 @@ function TabButton({ active, onClick, icon: Icon, label }) {
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center space-x-3 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+      className={`flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
         active ? 'bg-blue-500 text-white shadow-glow-blue' : 'text-slate-500 hover:text-white'
       }`}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-4 h-4 shrink-0" />
       <span>{label}</span>
     </button>
   );

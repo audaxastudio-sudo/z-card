@@ -30,10 +30,12 @@ import ProtectedRoute from './components/ProtectedRoute'
 import CustomerRegister from './pages/auth/CustomerRegister'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
+import PushNotificationManager from './components/PushNotificationManager'
 
 function App() {
   return (
     <AuthProvider>
+      <PushNotificationManager />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/welcome" element={<Welcome />} />

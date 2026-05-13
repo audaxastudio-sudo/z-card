@@ -203,7 +203,16 @@ export default function AdminPanel() {
         return;
       }
 
-      // 1. Gravar no banco de dados para notificações internas
+      // 1. Verificar quem tem token de push
+      const { data: profilesWithToken } = await supabase
+        .from('profiles')
+        .select('id')
+        .in('id', targets)
+        .not('push_token', 'is', null);
+
+      const tokensCount = profilesWithToken?.length || 0;
+
+      // 2. Gravar no banco de dados para notificações internas
       const notificationsData = targets.map(userId => ({
         user_id: userId,
         title: notification.title,
@@ -214,20 +223,24 @@ export default function AdminPanel() {
       const { error } = await supabase.from('notifications').insert(notificationsData);
       if (error) throw error;
 
-      // 2. Disparar Push real via Edge Function
-      try {
-        await supabase.functions.invoke('send-push', {
-          body: { 
-            user_ids: targets, 
-            title: notification.title, 
-            message: notification.message 
-          }
-        });
-      } catch (pushErr) {
-        console.error("Erro ao disparar push (continuando):", pushErr);
+      // 3. Disparar Push real via Edge Function
+      let pushResult = "Push não disparado (nenhum token encontrado).";
+      if (tokensCount > 0) {
+        try {
+          const { data: result } = await supabase.functions.invoke('send-push', {
+            body: { 
+              user_ids: targets, 
+              title: notification.title, 
+              message: notification.message 
+            }
+          });
+          pushResult = `Push enviado para ${tokensCount} dispositivos.`;
+        } catch (pushErr) {
+          pushResult = `Erro ao disparar push: ${pushErr.message}`;
+        }
       }
 
-      alert("Avisos enviados com sucesso!");
+      alert(`Notificações internas gravadas.\n${pushResult}`);
       setNotification({ ...notification, title: '', message: '' });
       setSelectedUser(null);
       setSearchQuery('');

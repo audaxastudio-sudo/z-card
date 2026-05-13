@@ -23,13 +23,16 @@ export const requestForToken = async () => {
     const messagingInstance = await messaging();
     if (!messagingInstance) return null;
 
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     const currentToken = await getToken(messagingInstance, {
-      vapidKey: "BOBYmCvdeKcjBCESDOHg8Og3aOHxr1b2qtIMj4-iJSyRuNFhFOJu8DLGh3HDPAZa68ce8eNP1ma3F8HQ9PpPy00"
+      vapidKey: "BOBYmCvdeKcjBCESDOHg8Og3aOHxr1b2qtIMj4-iJSyRuNFhFOJu8DLGh3HDPAZa68ce8eNP1ma3F8HQ9PpPy00",
+      serviceWorkerRegistration: registration
     });
     
     return currentToken || null;
   } catch (err) {
-    console.log('Push não suportado ou erro ao recuperar token:', err);
+    console.error("Erro ao solicitar push:", err);
+    alert("Erro ao ativar notificações: " + err.message);
     return null;
   }
 };

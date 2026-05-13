@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import AvatarUpload from '../../components/common/AvatarUpload';
+import { formatToTitleCase } from '../../lib/utils';
 
 const CATEGORIES = [
   "Gastronomia",
@@ -287,7 +288,7 @@ export default function Settings() {
                   <input 
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({...formData, name: formatToTitleCase(e.target.value)})}
                     className="w-full bg-black/40 border border-slate-700 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all font-medium"
                     required
                   />
@@ -355,7 +356,10 @@ export default function Settings() {
                   <input 
                     type="text"
                     value={formData.person_type === 'PJ' ? formData.corporate_name : formData.full_name}
-                    onChange={(e) => setFormData({...formData, [formData.person_type === 'PJ' ? 'corporate_name' : 'full_name']: e.target.value})}
+                    onChange={(e) => {
+                      const val = formatToTitleCase(e.target.value);
+                      setFormData({...formData, [formData.person_type === 'PJ' ? 'corporate_name' : 'full_name']: val});
+                    }}
                     className="w-full bg-black/40 border border-slate-700 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all font-medium"
                     required
                   />

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Store, ArrowRight, Loader2, ChevronLeft, MapPin, Phone, FileText, Tag, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import AvatarUpload from '../../components/common/AvatarUpload';
+import { formatToTitleCase } from '../../lib/utils';
 
 const CATEGORIES = [
   "Gastronomia", "Beleza & Estética", "Saúde & Bem-estar", 
@@ -147,7 +148,7 @@ export default function Register() {
       const cleanCnpj = formData.cnpj.replace(/\D/g, '');
       const cleanWhatsapp = formData.whatsapp.replace(/\D/g, '');
 
-      const { error } = await signUp({
+      const { data, error } = await signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -170,6 +171,12 @@ export default function Register() {
       });
 
       if (error) throw error;
+
+      // Se o usuário já existe mas a confirmação está ativada, o Supabase retorna o usuário
+      // mas com o array de identidades vazio.
+      if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
+        throw new Error('Este e-mail já está em uso. Por favor, utilize outro e-mail ou faça login.');
+      }
       
       alert('Cadastro realizado! Verifique seu e-mail para confirmar a conta.');
       navigate('/login/parceiro');
@@ -219,7 +226,7 @@ export default function Register() {
                   <input 
                     type="text" 
                     value={formData.storeName}
-                    onChange={(e) => setFormData(prev => ({...prev, storeName: e.target.value}))}
+                    onChange={(e) => setFormData(prev => ({...prev, storeName: formatToTitleCase(e.target.value)}))}
                     className="w-full bg-black/40 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
                     placeholder="Ex: Pizzaria Z-Card"
                     required
@@ -255,7 +262,10 @@ export default function Register() {
                 <input 
                   type="text" 
                   value={formData.personType === 'PJ' ? formData.corporateName : formData.fullName}
-                  onChange={(e) => setFormData(prev => ({...prev, [formData.personType === 'PJ' ? 'corporateName' : 'fullName']: e.target.value}))}
+                  onChange={(e) => {
+                    const val = formatToTitleCase(e.target.value);
+                    setFormData(prev => ({...prev, [formData.personType === 'PJ' ? 'corporateName' : 'fullName']: val}));
+                  }}
                   className="w-full bg-black/40 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
                   required
                 />

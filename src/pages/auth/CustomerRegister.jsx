@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Loader2, Phone, Calendar, MapPin, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import AvatarUpload from '../../components/common/AvatarUpload';
+import { formatToTitleCase } from '../../lib/utils';
 
 export default function CustomerRegister() {
   const [searchParams] = useSearchParams();
@@ -162,7 +163,7 @@ export default function CustomerRegister() {
     try {
       const cleanWhatsapp = formData.whatsapp.replace(/\D/g, '');
 
-      const { error } = await signUp({
+      const { data, error } = await signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -181,6 +182,12 @@ export default function CustomerRegister() {
       });
 
       if (error) throw error;
+
+      // Detectar e-mail já em uso (Supabase retorna user com identidades vazias se for duplicado e confirmação estiver ON)
+      if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
+        throw new Error('Este e-mail já está em uso por outro membro ou parceiro. Por favor, utilize outro e-mail.');
+      }
+
       alert('Cadastro realizado! Verifique seu e-mail para confirmar.');
       navigate('/login/membro');
     } catch (err) {
@@ -233,7 +240,7 @@ export default function CustomerRegister() {
                 <input 
                   type="text" 
                   value={formData.fullName}
-                  onChange={(e) => setFormData(prev => ({...prev, fullName: e.target.value}))}
+                  onChange={(e) => setFormData(prev => ({...prev, fullName: formatToTitleCase(e.target.value)}))}
                   className="w-full bg-brand-bg border border-slate-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium"
                   placeholder="Como quer ser chamado?"
                   required

@@ -55,4 +55,16 @@
 - **Correções Críticas:**
     *   Resolvido erro 500 no `signUp` via correção da trigger `handle_new_user` (conflito de colunas inexistentes).
     *   Implementado redirecionamento inteligente pós-login e na Landing Page (identificação automática de Membro/Parceiro).
-    *   Atualizada identidade visual institucional para "Audaxa Tecnologia".
+    
+---
+
+## [2026-05-13] - Ajustes de UX, Validação e PWA
+
+**Status**: Concluído ✅
+
+### Tarefas Realizadas:
+
+- [x] Corrigida validação de e-mail duplicado no cadastro (verificação de `identities` do Supabase).
+- [x] Implementada formatação automática `Title Case` em todos os campos de nome.
+- [x] Ícones do PWA regenerados com fundo preto e enquadramento otimizado.
+- [x] `manifest.json` atualizado com suporte a ícones `maskable` de alta resolução.

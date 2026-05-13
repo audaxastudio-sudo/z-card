@@ -14,3 +14,17 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const distance = R * c;
   return distance.toFixed(1);
 };
+
+/**
+ * Formata uma string para Title Case (Cada Palavra Iniciada Por Maiúscula).
+ * Remove espaços extras e lida com nomes próprios de forma elegante.
+ */
+export const formatToTitleCase = (str) => {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .split(' ')
+    .filter(word => word.length > 0)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};

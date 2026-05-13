@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import AvatarUpload from '../../components/common/AvatarUpload';
+import { formatToTitleCase } from '../../lib/utils';
 
 export default function Profile() {
   const { user, profile, fetchUserData, signOut } = useAuth();
@@ -248,7 +249,7 @@ export default function Profile() {
               <input 
                 type="text"
                 value={formData.full_name}
-                onChange={(e) => setFormData(prev => ({...prev, full_name: e.target.value}))}
+                onChange={(e) => setFormData(prev => ({...prev, full_name: formatToTitleCase(e.target.value)}))}
                 className="w-full bg-black/40 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-brand-yellow outline-none transition-all text-sm font-medium shadow-inner"
               />
             </div>

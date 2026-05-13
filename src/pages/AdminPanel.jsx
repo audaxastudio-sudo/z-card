@@ -29,6 +29,10 @@ export default function AdminPanel() {
   const [sending, setSending] = useState(false);
   const [vouchers, setVouchers] = useState([]);
   const [newVoucher, setNewVoucher] = useState({ code: '', benefit_days: 30, max_uses: 1 });
+  const [allCustomers, setAllCustomers] = useState([]);
+  const [allMerchants, setAllMerchants] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     fetchGlobalStats();
@@ -36,6 +40,8 @@ export default function AdminPanel() {
     fetchAllStores();
     fetchLeads();
     fetchVouchers();
+    fetchAllCustomers();
+    fetchAllMerchants();
   }, []);
 
   const fetchLeads = async () => {
@@ -53,10 +59,31 @@ export default function AdminPanel() {
   const fetchAllStores = async () => {
     const { data } = await supabase
       .from('stores')
-      .select('id, name, owner_id, subscription_expires_at, subscription_status, category')
+      .select(`
+        *,
+        owner:profiles(full_name, avatar_url)
+      `)
       .order('name');
     
     if (data) setAllStores(data);
+  };
+
+  const fetchAllCustomers = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('role', 'customer')
+      .order('full_name');
+    if (data) setAllCustomers(data);
+  };
+
+  const fetchAllMerchants = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('role', 'merchant')
+      .order('full_name');
+    if (data) setAllMerchants(data);
   };
 
   const fetchPlans = async () => {
@@ -154,15 +181,21 @@ export default function AdminPanel() {
   const sendNotification = async (e) => {
     e.preventDefault();
     if (!notification.title || !notification.message) return;
+    if ((notification.target === 'individual_merchant' || notification.target === 'individual_customer') && !selectedUser) {
+      alert("Por favor, selecione um usuário.");
+      return;
+    }
 
     setSending(true);
     try {
       let targets = [];
-      if (notification.target === 'all') {
+      
+      if (notification.target === 'all_merchants') {
         targets = allStores.map(s => s.owner_id);
-      } else {
-        const store = allStores.find(s => s.id === notification.storeId);
-        if (store) targets = [store.owner_id];
+      } else if (notification.target === 'all_customers') {
+        targets = allCustomers.map(c => c.id);
+      } else if (notification.target === 'individual_merchant' || notification.target === 'individual_customer') {
+        targets = [selectedUser.id];
       }
 
       if (targets.length === 0) {
@@ -170,6 +203,7 @@ export default function AdminPanel() {
         return;
       }
 
+      // 1. Gravar no banco de dados para notificações internas
       const notificationsData = targets.map(userId => ({
         user_id: userId,
         title: notification.title,
@@ -180,8 +214,23 @@ export default function AdminPanel() {
       const { error } = await supabase.from('notifications').insert(notificationsData);
       if (error) throw error;
 
-      alert("Notificação enviada com sucesso!");
+      // 2. Disparar Push real via Edge Function
+      try {
+        await supabase.functions.invoke('send-push', {
+          body: { 
+            user_ids: targets, 
+            title: notification.title, 
+            message: notification.message 
+          }
+        });
+      } catch (pushErr) {
+        console.error("Erro ao disparar push (continuando):", pushErr);
+      }
+
+      alert("Avisos enviados com sucesso!");
       setNotification({ ...notification, title: '', message: '' });
+      setSelectedUser(null);
+      setSearchQuery('');
     } catch (err) {
       console.error(err);
       alert("Erro ao enviar notificação.");
@@ -265,6 +314,7 @@ export default function AdminPanel() {
           
           <div className="flex bg-brand-surface p-1 rounded-2xl border border-slate-800 overflow-x-auto scrollbar-hide">
             <TabButton active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon={Activity} label="Painel" />
+            <TabButton active={activeTab === 'merchants'} onClick={() => setActiveTab('merchants')} icon={Users} label="Parceiros" />
             <TabButton active={activeTab === 'stores'} onClick={() => setActiveTab('stores')} icon={Store} label="Lojas" />
             <TabButton active={activeTab === 'leads'} onClick={() => setActiveTab('leads')} icon={UserPlus} label="Leads" />
             <TabButton active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={Bell} label="Avisos" />
@@ -464,25 +514,65 @@ export default function AdminPanel() {
                   <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Público Alvo</label>
                   <select 
                     value={notification.target}
-                    onChange={(e) => setNotification({...notification, target: e.target.value})}
+                    onChange={(e) => {
+                      setNotification({...notification, target: e.target.value});
+                      setSelectedUser(null);
+                      setSearchQuery('');
+                    }}
                     className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-brand-yellow outline-none transition-all"
                   >
-                    <option value="all">Todos os Lojistas</option>
-                    <option value="individual">Lojista Individual</option>
+                    <option value="all_merchants">Todos os Parceiros</option>
+                    <option value="individual_merchant">Parceiro Individual</option>
+                    <option value="all_customers">Todos os Membros</option>
+                    <option value="individual_customer">Membro Individual</option>
                   </select>
                 </div>
 
-                {notification.target === 'individual' && (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Selecionar Loja</label>
-                    <select 
-                      value={notification.storeId}
-                      onChange={(e) => setNotification({...notification, storeId: e.target.value})}
+                {(notification.target === 'individual_merchant' || notification.target === 'individual_customer') && (
+                  <div className="space-y-2 relative">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                      {notification.target === 'individual_merchant' ? 'Buscar Parceiro' : 'Buscar Membro'}
+                    </label>
+                    <input 
+                      type="text"
+                      placeholder="Digite nome ou e-mail..."
+                      value={selectedUser ? selectedUser.full_name : searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSelectedUser(null);
+                      }}
                       className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-sm text-white focus:border-brand-yellow outline-none transition-all"
-                    >
-                      <option value="">Escolha...</option>
-                      {allStores.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                    </select>
+                    />
+                    
+                    {searchQuery && !selectedUser && (
+                      <div className="absolute z-50 w-full mt-2 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl max-h-60 overflow-y-auto">
+                        {(notification.target === 'individual_merchant' ? allStores : allCustomers)
+                          .filter(item => {
+                            const name = notification.target === 'individual_merchant' ? item.name : item.full_name;
+                            return name?.toLowerCase().includes(searchQuery.toLowerCase());
+                          })
+                          .map(item => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                if (notification.target === 'individual_merchant') {
+                                  setSelectedUser({ id: item.owner_id, full_name: item.name });
+                                } else {
+                                  setSelectedUser(item);
+                                }
+                                setSearchQuery('');
+                              }}
+                              className="w-full text-left px-5 py-4 hover:bg-slate-800 transition-colors flex items-center space-x-3"
+                            >
+                              <div className="w-8 h-8 bg-brand-yellow/10 rounded-lg flex items-center justify-center text-brand-yellow text-xs font-black">
+                                {(notification.target === 'individual_merchant' ? item.name : item.full_name).charAt(0)}
+                              </div>
+                              <span className="text-sm text-white">{notification.target === 'individual_merchant' ? item.name : item.full_name}</span>
+                            </button>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -674,6 +764,82 @@ export default function AdminPanel() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'merchants' && (
+          <div className="bg-brand-surface border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+              <div>
+                <h3 className="text-xl font-bold text-white flex items-center">
+                  <Users className="w-6 h-6 mr-3 text-brand-yellow" /> Gestão de Parceiros
+                </h3>
+                <p className="text-xs text-slate-500 mt-1 uppercase font-bold tracking-widest">Controle e visualização de todos os lojistas</p>
+              </div>
+              <div className="flex items-center space-x-2 bg-black/20 p-3 rounded-2xl border border-slate-800">
+                <Users className="w-4 h-4 text-slate-500" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{allMerchants.length} Parceiros</span>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                    <th className="pb-5 px-4">Parceiro</th>
+                    <th className="pb-5 px-4">ID do Usuário</th>
+                    <th className="pb-5 px-4">Cadastro em</th>
+                    <th className="pb-5 px-4 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/50">
+                  {allMerchants.map(merchant => (
+                    <tr key={merchant.id} className="hover:bg-slate-800/30 transition-colors group">
+                      <td className="py-6 px-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-800 group-hover:border-brand-yellow/30 transition-all shadow-inner">
+                            {merchant.avatar_url ? (
+                              <img src={merchant.avatar_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <Users className="w-6 h-6 text-slate-700" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-white font-bold group-hover:text-brand-yellow transition-colors">{merchant.full_name || 'Sem Nome'}</p>
+                            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Lojista Parceiro</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-6 px-4 font-mono text-[10px] text-slate-500">
+                        {merchant.id}
+                      </td>
+                      <td className="py-6 px-4">
+                        <span className="text-xs font-bold text-slate-300">{new Date(merchant.created_at).toLocaleDateString()}</span>
+                      </td>
+                      <td className="py-6 px-4 text-right">
+                        <button 
+                          onClick={() => {
+                            setNotification({ target: 'individual_merchant', title: '', message: '' });
+                            setSelectedUser({ id: merchant.id, full_name: merchant.full_name });
+                            setActiveTab('notifications');
+                          }}
+                          className="bg-brand-yellow/10 text-brand-yellow px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-brand-yellow hover:text-brand-bg transition-all shadow-glow-yellow/5"
+                        >
+                          Enviar Aviso
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {allMerchants.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="py-20 text-center text-slate-600 italic text-sm">
+                        Nenhum parceiro encontrado.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

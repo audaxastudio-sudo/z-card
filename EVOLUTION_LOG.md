@@ -68,3 +68,17 @@
 - [x] Implementada formatação automática `Title Case` em todos os campos de nome.
 - [x] Ícones do PWA regenerados com fundo preto e enquadramento otimizado.
 - [x] `manifest.json` atualizado com suporte a ícones `maskable` de alta resolução.
+
+---
+
+## [ATIVO] - Notificações Push & Expansão Admin
+
+**Status**: Em Progresso 🛠️
+
+### Tarefas em Andamento:
+
+- [ ] Integrar disparos Push reais nas Campanhas de Parceiros.
+- [ ] Implementar seletor inteligente (Autocomplete) de usuários no Admin.
+- [ ] Adicionar envio de Push global/individual para Membros no Painel Admin.
+- [ ] Criar aba de Gestão de Parceiros no Admin Center.
+- [ ] Validar recebimento de tokens de push em primeiro e segundo plano.

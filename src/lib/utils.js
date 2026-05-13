@@ -21,10 +21,15 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
  */
 export const formatToTitleCase = (str) => {
   if (!str) return '';
-  return str
+  
+  // Se terminar com espaço, mantém o espaço para permitir a digitação da próxima palavra
+  const endsWithSpace = str.endsWith(' ');
+  
+  const formatted = str
     .toLowerCase()
     .split(' ')
-    .filter(word => word.length > 0)
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+
+  return endsWithSpace ? formatted.replace(/\s+$/, ' ') : formatted;
 };
